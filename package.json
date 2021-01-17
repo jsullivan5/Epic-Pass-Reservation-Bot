@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^5.5.0"
+    "puppeteer": "^5.5.0",
+    "twilio": "^3.55.0"
   },
   "devDependencies": {
     "eslint": "^7.18.0",
