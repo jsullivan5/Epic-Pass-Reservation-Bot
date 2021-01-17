@@ -1,11 +1,20 @@
-!/bin/bash
+#!/usr/bin/env bash
 
-RED='\033[0;31m'
-CYAN='\033[0;36m'
-NO_COLOR='\033[0m'
+RED=$'\e[0;31m'
+GREEN=$'\e[0;32m'
+CYAN=$'\e[0;36m'
+NO_COLOR=$'\e[0m'
 
-echo "Hello ${RED}$USER!${CYAN}"
+echo "Hello ${RED}$USER!${GREEN}"
 sleep 2
+echo '___________      .__         __________        __   
+\_   _____/_____ |__| ____   \______   \ _____/  |_ 
+ |    __)_\____ \|  |/ ___\   |    |  _//  _ \   __\
+ |        \  |_> >  \  \___   |    |   (  <_> )  |  
+/_______  /   __/|__|\___  >  |______  /\____/|__|  
+        \/|__|           \/          \/             '
+sleep 1
+echo "${CYAN}"
 echo '                __   
    ____   _____/  |_ 
   / ___\_/ __ \   __\
@@ -64,14 +73,14 @@ echo "Enter password: " && read -s password
 PS3="Choose a resort: "
 select resort in "${resort_array[@]}";
 do
-  echo "\n$resort ($REPLY). ${RED}Sick Bruh${NO_COLOR}"
+  echo "$resort ($REPLY). ${RED}Sick Bruh${NO_COLOR}"
   chosen_resort=$resort
 	break;
 done
 PS3="What Month do you want to go: "
 select month in "${month_array[@]}";
 do
-  echo "\n$month ($REPLY). Rad."
+  echo "$month ($REPLY). ${RED}Rad.${NO_COLOR}"
   chosen_month="$(($i + 1))"
 	break;
 done
@@ -83,4 +92,4 @@ export RESORT=$chosen_resort
 export MONTH=$chosen_month
 export DAY=$chosen_day
 
-node browserScript.js
+node src/browserScript.js
