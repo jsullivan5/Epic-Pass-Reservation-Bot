@@ -1,28 +1,32 @@
 const puppeteer = require('puppeteer');
-const { resortMap } = require('./resortMap');
+
+const { twilioService } = require('./twilio.service');
+const { config } = require('./config');
 
 /**
- * Comment out the environment variables and
- * manully add the inputs below in plain text below
+ * Comment out the references to config and
+ * manully add the inputs below in plain text
  * to run as a node process without the CLI
  */
 
 // const username = '<yourloginemail@example.com>';
 // const password = '<yourpassword>';
 // const resort = 'where you want to go';
-// const mont = 'add a month like 2 for February'
-// const day = 'what day you want to go like 27';
+// const mont = 'add a month like <2> for February'
+// const day = 'what day you want to go like <27>';
 
-const username = process.env.USERNAME;
-const password = process.env.PASSWORD;
-const resort = resortMap[process.env.RESORT];
-const month = process.env.MONTH;
-const day = process.env.DAY;
+const {
+	username,
+	password,
+	resort,
+	month,
+	day,
+} = config;
 
 console.log(
 	'Running bot with the following inputs:\n',
 	`username: ${username}\n`,
-	`password: ${password}\n`,
+	'password: ***\n',
 	`resort: ${resort}\n`,
 	`month: ${month}\n`,
 	`day: ${day}\n`
@@ -34,7 +38,7 @@ console.log(
 		const browser = await puppeteer.launch({
 			headless: false,
 			slowMo: 75,
-			devtools: true
+			// devtools: true
 		});
 		const page = await browser.newPage();
 
@@ -63,7 +67,7 @@ console.log(
 
 		const resortSelection = await page.waitForSelector('#PassHolderReservationComponent_Resort_Selection');
 		console.log('Selecting a resort\n');
-		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', '1');
+		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', resort);
 
 		await page.click('#passHolderReservationsSearchButton');
 		await page.waitForSelector('.passholder_reservations__calendar__day');
@@ -91,9 +95,12 @@ console.log(
 		completeResBtn.click();
 		console.log('GET READY TO SHRED!!!\n');
 
-		await page.waitForNavigation();
+		await twilioService(resort, month, day);
 
-		setTimeout(() => console.log('Pack your bags'), 5000);
+		await page.setDefaultNavigationTimeout(0);
+		page.waitForNavigation()
+			.then(() => {})
+			.catch((e) => {}); // catching useless error
 
 		await browser.close();
 	} catch (error) {
