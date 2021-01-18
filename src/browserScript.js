@@ -95,7 +95,9 @@ console.log(
 		completeResBtn.click();
 		console.log('GET READY TO SHRED!!!\n');
 
-		await twilioService(resort, month, day);
+		if (config.twilioAccountSid && config.twilioAuthToken) {
+			await twilioService(resort, month, day);
+		}
 
 		await page.setDefaultNavigationTimeout(0);
 		page.waitForNavigation()
