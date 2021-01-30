@@ -48,52 +48,52 @@ console.log(
 		await page.waitForXPath('//*[@id="onetrust-accept-btn-handler"]');
 		const [cookieBtn] = await page.$x('//*[@id="onetrust-accept-btn-handler"]');
 		await cookieBtn.click();
-		console.log('Accepted cookie policy\n');
+		console.log('Accepted cookie policy');
 		// Login
 		await page.click('#txtUserName_3');
-		console.log('Typing username\n');
+		console.log('Typing username');
 		await page.type('#txtUserName_3', username, { delay: 20 });
 
 		await page.click('#txtPassword_3');
-		console.log('Typing password\n');
+		console.log('Typing password');
 		await page.type('#txtPassword_3', password, { delay: 20 });
 
 		await page.waitForXPath('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
 		const [loginButton] = await page.$x('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
 		console.log('Clicking login button');
 		await loginButton.click();
-		console.log('Logged in\n');
+		console.log('Logged in');
 		await page.waitForNavigation();
 
 		const resortSelection = await page.waitForSelector('#PassHolderReservationComponent_Resort_Selection');
-		console.log('Selecting a resort\n');
+		console.log('Selecting a resort');
 		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', resort);
 
 		await page.click('#passHolderReservationsSearchButton');
 		await page.waitForSelector('.passholder_reservations__calendar__day');
 		const [calendarDay] = await page.$x(`//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[4]/button[${day}]`);
-		console.log('Selecting calendar day\n');
+		console.log('Selecting calendar day');
 		await calendarDay.click();
 
 		const passholderCheckbox = await page.waitForSelector('.passholder_reservations__assign_passholder_modal__name');
-		console.log('Selecting passholder\n');
+		console.log('Selecting passholder');
 		passholderCheckbox.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
 		const [assignPassholderBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
-		console.log('Assigning passholder\n');
+		console.log('Assigning passholder');
 		await assignPassholderBtn.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
 		const [termsAdnConditionsBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
-		console.log('Consenting to shredc');
+		console.log('Consenting to shred');
 		await termsAdnConditionsBtn.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
 		const [completeResBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
-		console.log('Completing reservation\n');
+		console.log('Completing reservation');
 		completeResBtn.click();
-		console.log('GET READY TO SHRED!!!\n');
+		console.log('GET READY TO SHRED!!!');
 
 		if (config.twilioAccountSid && config.twilioAuthToken) {
 			await twilioService(resort, month, day);
