@@ -100,9 +100,7 @@ console.log(
 		}
 
 		await page.setDefaultNavigationTimeout(0);
-		page.waitForNavigation()
-			.then(() => {})
-			.catch((e) => {}); // catching useless error
+		await page.waitForNavigation();
 
 		await browser.close();
 	} catch (error) {
