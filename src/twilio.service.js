@@ -23,7 +23,7 @@ const twilioService = async (resortCode, month, day) => {
 			body: `Sick Brah!  You're heading to ${humanReadableResort} on ${month + 1}/${day}. 🤙🤙🤙`,
 			from: config.twilioSendFromNum,
 			mediaUrl: ['https://media.giphy.com/media/3oKIPs6VsHLpVXnZTy/giphy-downsized.gif'], // Non congigurable non negotiable...
-			to: config.twilioYourNotificationNum
+			to: config.myPhoneNumber
 		})
 		.then(message => console.log(`Sending MMS: ${message.sid}`));
 };
