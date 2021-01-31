@@ -70,6 +70,7 @@ month_array=(January February March April May June)
 
 read -p "Enter email: "            username
 echo "Enter password: " && read -s password
+
 PS3="Choose a resort: "
 select resort in "${resort_array[@]}";
 do
@@ -77,11 +78,12 @@ do
   chosen_resort=$resort
 	break;
 done
+
 PS3="What Month do you want to go: "
 select month in "${month_array[@]}";
 do
   echo "$month ($REPLY). ${RED}Rad.${NO_COLOR}"
-  chosen_month="$(($i + 1))"
+  chosen_month="$(($REPLY - 1))"
 	break;
 done
 read -p "What day: " chosen_day
