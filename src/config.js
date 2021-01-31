@@ -6,8 +6,8 @@ const { resortMap } = require('./resortMap');
  * upon a successful reservation.
  * @param twilioAccountSid Twilio account SID
  * @param twilioAuthToken Twilio auth token
- * @param twilioSendFromNum Your Twilio number <+1555222333>
- * @param twilioYourNotificationNum Yopur phone number <+1555222333>
+ * @param twilioSendFromNum Your Twilio number <+15552223333>
+ * @param myPhoneNumber Your phone number <+15552223333>
  */
 
 const config = {
@@ -16,10 +16,11 @@ const config = {
 	resort: resortMap[process.env.RESORT],
 	month: process.env.MONTH,
 	day: process.env.DAY,
-	twilioAccountSid: '', // Add these vars to use twilio feature from your account
-	twilioAuthToken: '',
-	twilioSendFromNum: '',
-	twilioYourNotificationNum: ''
+	// Add these vars to the .env file if you want to enable this feature
+	twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || null,
+	twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || null,
+	twilioSendFromNum: process.env.TWILIO_SEND_FROM || null,
+	myPhoneNumber: process.env.MY_PHONE_NUMBER || null,
 };
 
 module.exports = {
