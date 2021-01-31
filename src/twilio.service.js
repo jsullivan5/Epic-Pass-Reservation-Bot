@@ -1,5 +1,6 @@
 const { config } = require('./config');
 const { resortMap } = require('./resortMap');
+const { logger } = require('./utils/logger');
 const accountSid = config.twilioAccountSid;
 const authToken = config.twilioAuthToken;
 
@@ -12,7 +13,7 @@ const twilioService = async (resortCode, month, day) => {
 		}
 		return accu;
 	}, '');
-	console.log(
+	logger.debug(
 		'Sending MMS with config:\n',
 		`Resort: ${humanReadableResort}\n`,
 		`Month: ${month}\n`,
@@ -25,7 +26,7 @@ const twilioService = async (resortCode, month, day) => {
 			mediaUrl: ['https://media.giphy.com/media/3oKIPs6VsHLpVXnZTy/giphy-downsized.gif'], // Non congigurable non negotiable...
 			to: config.myPhoneNumber
 		})
-		.then(message => console.log(`Sending MMS: ${message.sid}`));
+		.then(message => logger.debug(`Sending MMS: ${message.sid}`));
 };
 
 module.exports = {

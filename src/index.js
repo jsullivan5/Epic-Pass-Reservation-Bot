@@ -1,7 +1,12 @@
+require('dotenv').config();
 const puppeteer = require('puppeteer');
 
 const { twilioService } = require('./twilio.service');
 const { config } = require('./config');
+const { logger } = require('./utils/logger');
+
+// Scripts for various tasks
+const { login } = require('./scripts/login');
 
 /**
  * Comment out the references to config and
@@ -21,6 +26,7 @@ const {
 	resort,
 	month,
 	day,
+	runHeadless,
 } = config; // Driven by CLI environment variables
 
 const getDate = ({ chosenMonth }) => {
@@ -43,17 +49,17 @@ const retryWhenDayFull = async ({ timeout, page }) => { // timout for 5 minutes 
 	const isDisabled = (await page.$x(`${btnXpath}[@disabled]`)).length !== 0;
 
 	if (isDisabled) {
-		console.log(`Day is full. Running again after ${timeout / 1000 / 60} minutes`);
+		logger.debug(`Day is full. Running again after ${timeout / 1000 / 60} minutes`);
 		await page.waitForTimeout(timeout);
 		await retryWhenDayFull({ timeout, page });
 	}
 
-	console.log('Selecting calendar day');
+	logger.debug('Selecting calendar day');
 	const [calendarDayBtn] = (await page.$x(btnXpath));
 	return calendarDayBtn.click();
 };
 
-console.log(
+logger.debug(
 	'Running bot with the following inputs:\n',
 	`username: ${username}\n`,
 	'password: ***\n',
@@ -62,11 +68,32 @@ console.log(
 	`day: ${day}\n`
 );
 
+// (async () => {
+// 	try {
+// 		const browser = await puppeteer.launch({
+// 			headless: false,
+// 			slowMo: 75,
+// 			// devtools: true
+// 		});
+// 		const page = await browser.newPage();
+
+// 		// Navigate to reservation page
+// 		await page.goto('https://example.com');
+// 		await page.evaluate(async () => {
+// 			const sentence = 'You powder hound.  You are going to Breckenridge on 1 21.  You will be surfing the glades on champagne powder like a boss.  Rip \'em and stick \'em boys and girls';
+// 			const utterance = new SpeechSynthesisUtterance(sentence);
+// 			window.speechSynthesis.speak(utterance);
+// 		});
+// 	} catch (e) {
+// 		logger.debug(e);
+// 	}
+// })();
+
 (async () => {
 	// Setup
 	try {
 		const browser = await puppeteer.launch({
-			headless: false,
+			headless: runHeadless, // only false if you don't like watching magic browesers or in Docker
 			slowMo: 75,
 			// devtools: true
 		});
@@ -78,28 +105,29 @@ console.log(
 		await page.waitForXPath('//*[@id="onetrust-accept-btn-handler"]');
 		const [cookieBtn] = await page.$x('//*[@id="onetrust-accept-btn-handler"]');
 		await cookieBtn.click();
-		console.log('Accepted cookie policy');
-		// Login
-		await page.click('#txtUserName_3');
-		console.log('Typing username');
-		await page.type('#txtUserName_3', username, { delay: 20 });
+		logger.debug('Accepted cookie policy');
+		// // Login
+		// await page.click('#txtUserName_3');
+		// logger.debug('Typing username');
+		// await page.type('#txtUserName_3', username, { delay: 20 });
 
-		await page.click('#txtPassword_3');
-		console.log('Typing password');
-		await page.type('#txtPassword_3', password, { delay: 20 });
+		// await page.click('#txtPassword_3');
+		// logger.debug('Typing password');
+		// await page.type('#txtPassword_3', password, { delay: 20 });
 
-		await page.waitForXPath('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
-		const [loginButton] = await page.$x('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
-		console.log('Clicking login button');
-		await loginButton.click();
-		console.log('Logged in');
+		// await page.waitForXPath('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
+		// const [loginButton] = await page.$x('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
+		// logger.debug('Clicking login button');
+		// await loginButton.click();
+		// logger.debug('Logged in');
+		await login({ page, username, password, delay: 20 });
 		await page.waitForNavigation();
 
 		const resortSelection = await page.waitForSelector('#PassHolderReservationComponent_Resort_Selection');
-		console.log('Selecting a resort');
+		logger.debug('Selecting a resort');
 		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', resort);
 
-		console.log('Selecting month');
+		logger.debug('Selecting month');
 
 		await page.click('#passHolderReservationsSearchButton');
 		await page.waitForSelector('.passholder_reservations__calendar__day');
@@ -114,36 +142,46 @@ console.log(
 		await retryWhenDayFull({ timeout: 300000, page }); // Recursively retries every 5 minutes
 
 		const passholderCheckbox = await page.waitForSelector('.passholder_reservations__assign_passholder_modal__name');
-		console.log('Selecting passholder');
+		logger.debug('Selecting passholder');
 		passholderCheckbox.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
 		const [assignPassholderBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
-		console.log('Assigning passholder');
+		logger.debug('Assigning passholder');
 		await assignPassholderBtn.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
 		const [termsAdnConditionsBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
-		console.log('Consenting to shred');
+		logger.debug('Consenting to shred');
 		await termsAdnConditionsBtn.click();
 
 		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
 		const [completeResBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
-		console.log('Completing reservation');
+		logger.debug('Completing reservation');
 		completeResBtn.click();
-		console.log('GET READY TO SHRED!!!');
+		logger.debug('GET READY TO SHRED!!!');
 
-		if (config.twilioAccountSid && config.twilioAuthToken) {
-			await twilioService(resort, month, day);
-		}
+		// if (
+		// 	config.twilioAccountSid &&
+		// 	config.twilioAuthToken &&
+		// 	config.twilioSendFromNum &&
+		// 	config.myPhoneNumber
+		// ) {
+		// 	await twilioService(resort, month, day);
+		// }
 
-		await page.waitForSelector('.confirmed_reservation__logo');
+		// await page.waitForSelector('.confirmed_reservation__logo');
+		// await page.evaluate(async () => {
+		// 	const sentence = 'You powder hound.  You are going to Breckenridge on 1 21.  You will be surfing the glades on champagne powder like a boss.  Rip \'em and stick \'em boys and girls';
+		// 	const utterance = new SpeechSynthesisUtterance(sentence);
+		// 	window.speechSynthesis.speak(utterance);
+		// });
 		await page.waitForTimeout(10000);
 
 		await browser.close();
 	} catch (error) {
-		console.error('¯\\_(ツ)_/¯\n\n\n');
-		console.error(error);
+		logger.error('¯\\_(ツ)_/¯\n\n\n');
+		logger.error(error);
 		process.exit();
 	}
 })();
