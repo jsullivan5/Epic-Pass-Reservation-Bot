@@ -12,7 +12,7 @@ const { config } = require('./config');
 // const username = '<yourloginemail@example.com>';
 // const password = '<yourpassword>';
 // const resort = 'where you want to go';
-// const mont = 'add a month like <2> for February'
+// const month = 'add a month like <2> for February'
 // const day = 'what day you want to go like <27>';
 
 const {
@@ -21,7 +21,37 @@ const {
 	resort,
 	month,
 	day,
-} = config;
+} = config; // Driven by CLI environment variables
+
+const getDate = ({ chosenMonth }) => {
+	const todaysDate = new Date();
+	const currentMonth = todaysDate.getMonth();
+	const monthIncrementNum = chosenMonth - currentMonth;
+
+	if (monthIncrementNum < 0) {
+		throw new Error('Month cannot be in the past');
+	}
+
+	return monthIncrementNum;
+};
+
+const monthIncrementNum = getDate({ chosenMonth: month });
+
+const retryWhenDayFull = async ({ timeout, page }) => { // timout for 5 minutes = 300000
+	await page.waitForSelector('.passholder_reservations__calendar__day');
+	const btnXpath = `//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[4]/button[${day}]`;
+	const isDisabled = (await page.$x(`${btnXpath}[@disabled]`)).length !== 0;
+
+	if (isDisabled) {
+		console.log(`Day is full. Running again after ${timeout / 1000 / 60} minutes`);
+		await page.waitForTimeout(timeout);
+		await retryWhenDayFull({ timeout, page });
+	}
+
+	console.log('Selecting calendar day');
+	const [calendarDayBtn] = (await page.$x(btnXpath));
+	return calendarDayBtn.click();
+};
 
 console.log(
 	'Running bot with the following inputs:\n',
@@ -69,11 +99,19 @@ console.log(
 		console.log('Selecting a resort');
 		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', resort);
 
+		console.log('Selecting month');
+
 		await page.click('#passHolderReservationsSearchButton');
 		await page.waitForSelector('.passholder_reservations__calendar__day');
-		const [calendarDay] = await page.$x(`//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[4]/button[${day}]`);
-		console.log('Selecting calendar day');
-		await calendarDay.click();
+
+		if (monthIncrementNum !== 0) {
+			for (let i = 0; i < monthIncrementNum; i++) {
+				await page.waitForSelector('.passholder_reservations__calendar__arrow--right');
+				await page.click('.passholder_reservations__calendar__arrow--right');
+			}
+		}
+
+		await retryWhenDayFull({ timeout: 300000, page }); // Recursively retries every 5 minutes
 
 		const passholderCheckbox = await page.waitForSelector('.passholder_reservations__assign_passholder_modal__name');
 		console.log('Selecting passholder');
@@ -99,8 +137,8 @@ console.log(
 			await twilioService(resort, month, day);
 		}
 
-		await page.setDefaultNavigationTimeout(0);
-		await page.waitForNavigation();
+		await page.waitForSelector('.confirmed_reservation__logo');
+		await page.waitForTimeout(10000);
 
 		await browser.close();
 	} catch (error) {
