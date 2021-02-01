@@ -17,7 +17,7 @@ const { getHumanReadableResort } = require('../utils/getHumanReadableResort');
 const finishWithRobotVoice = async ({ page, resort, month, day }) => {
 	await page.waitForSelector('.confirmed_reservation__logo');
 
-	if (config.roboVoiceEnbled || !config.runHeadless) {
+	if (config.roboVoiceEnabled || !config.runHeadless) {
 		const humanReadableResort = getHumanReadableResort({ resortCode: resort });
 		await page.evaluate(async (humanReadableResort, month, day) => {
 			const sentence = `

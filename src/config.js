@@ -19,7 +19,7 @@ const config = {
 	day: process.env.DAY,
 	runHeadless: process.env.RUN_HEADLESS || false,
 	devtools: process.env.DEVTOOLS || false,
-	roboVoiceEnbled: true, // Why would to toggle this????
+	roboVoiceEnabled: true, // Why would to toggle this????
 	// Add these vars to the .env file if you want to enable this feature
 	twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || null,
 	twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || null,
