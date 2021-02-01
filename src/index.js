@@ -24,7 +24,7 @@ const { finishWithRobotVoice } = require('./scripts/finishWithRobotVoice');
 // const username = '<yourloginemail@example.com>';
 // const password = '<yourpassword>';
 // const resort = 'where you want to go';
-// const month = 'add a month like <2> for February';
+// const month = 'add numeric value for month - 1.  Februrary (2) would be read by JS as <1>.';
 // const day = 'what day you want to go like <27>';
 
 const {
