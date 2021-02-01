@@ -21,7 +21,7 @@ const finishWithRobotVoice = async ({ page, resort, month, day }) => {
 		const humanReadableResort = getHumanReadableResort({ resortCode: resort });
 		await page.evaluate(async (humanReadableResort, month, day) => {
 			const sentence = `
-				You are going to ${humanReadableResort} on ${month + 1} ${day}.
+				You are going to ${humanReadableResort} on ${(parseInt(month) + 1)} ${day}.
 				You will be floating the glades on champagne powder like a boss.
 				It's going to be Chronicles of fucking Gnarnia out there.
 			`;
