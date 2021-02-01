@@ -1,15 +1,20 @@
 {
-  "name": "Epic-Mix-Reservetion-Bot",
+  "name": "epic-mix-reservetion-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+	"main": "index.js",
+	"engines": {
+		"node": ">=14"
+	},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["dope", "chill", "shred"],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "log4js": "^6.3.0",
     "puppeteer": "^5.5.0",
     "twilio": "^3.55.0"
   },
