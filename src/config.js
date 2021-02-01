@@ -11,12 +11,15 @@ const { resortMap } = require('./resortMap');
  */
 
 const config = {
+	initialUrl: 'https://www.epicpass.com/account/login.aspx?url=%2fplan-your-trip%2flift-access%2freservations.aspx%3freservation%3dtrue',
 	username: process.env.USERNAME,
 	password: process.env.PASSWORD,
 	resort: resortMap[process.env.RESORT],
 	month: process.env.MONTH,
 	day: process.env.DAY,
 	runHeadless: process.env.RUN_HEADLESS || false,
+	devtools: process.env.DEVTOOLS || false,
+	roboVoiceEnbled: true, // Why would to toggle this????
 	// Add these vars to the .env file if you want to enable this feature
 	twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || null,
 	twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || null,

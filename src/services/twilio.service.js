@@ -1,18 +1,13 @@
-const { config } = require('./config');
-const { resortMap } = require('./resortMap');
-const { logger } = require('./utils/logger');
+const { getHumanReadableResort } = require('../utils/getHumanReadableResort');
+const { config } = require('../config');
+const { logger } = require('../utils/logger');
+
 const accountSid = config.twilioAccountSid;
 const authToken = config.twilioAuthToken;
 
 const twilioService = async (resortCode, month, day) => {
 	const client = require('twilio')(accountSid, authToken);
-	const humanReadableResort = Object.keys(resortMap).reduce((accu, key) => {
-		if (resortMap[key] === `${resortCode}`) {
-			accu = key;
-			return accu;
-		}
-		return accu;
-	}, '');
+	const humanReadableResort = getHumanReadableResort({ resortCode });
 	logger.debug(
 		'Sending MMS with config:\n',
 		`Resort: ${humanReadableResort}\n`,

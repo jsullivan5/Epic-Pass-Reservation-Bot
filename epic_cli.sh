@@ -68,8 +68,8 @@ echo "${NO_COLOR}"
 OIFS="$IFS"; IFS=$'\n'; resort_array=($(<resort.list)); IFS="$OIFS"
 month_array=(January February March April May June)
 
-read -p "Enter email: "            username
-echo "Enter password: " && read -s password
+read -p "Enter Epic email: "            username
+echo "Enter Epic password: " && read -s password
 
 PS3="Choose a resort: "
 select resort in "${resort_array[@]}";
@@ -94,4 +94,4 @@ export RESORT=$chosen_resort
 export MONTH=$chosen_month
 export DAY=$chosen_day
 
-node src/browserScript.js
+node src/index.js

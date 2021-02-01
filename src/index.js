@@ -1,12 +1,19 @@
 require('dotenv').config();
 const puppeteer = require('puppeteer');
 
-const { twilioService } = require('./twilio.service');
 const { config } = require('./config');
 const { logger } = require('./utils/logger');
 
 // Scripts for various tasks
 const { login } = require('./scripts/login');
+const { acceptCookies } = require('./scripts/acceptCookies');
+const { selectResort } = require('./scripts/selectResort');
+const { selectMonth } = require('./scripts/selectMonth');
+const { grantUserConsent } = require('./scripts/userConsent');
+const { selectDayRetryWhenFull } = require('./scripts/selectDayRetryWhenFull');
+const { completeReservation } = require('./scripts/completeReservation');
+const { sendTwilioMsg } = require('./scripts/sendTwilioMsg');
+const { finishWithRobotVoice } = require('./scripts/finishWithRobotVoice');
 
 /**
  * Comment out the references to config and
@@ -17,7 +24,7 @@ const { login } = require('./scripts/login');
 // const username = '<yourloginemail@example.com>';
 // const password = '<yourpassword>';
 // const resort = 'where you want to go';
-// const month = 'add a month like <2> for February'
+// const month = 'add a month like <2> for February';
 // const day = 'what day you want to go like <27>';
 
 const {
@@ -26,162 +33,43 @@ const {
 	resort,
 	month,
 	day,
-	runHeadless,
 } = config; // Driven by CLI environment variables
 
-const getDate = ({ chosenMonth }) => {
-	const todaysDate = new Date();
-	const currentMonth = todaysDate.getMonth();
-	const monthIncrementNum = chosenMonth - currentMonth;
-
-	if (monthIncrementNum < 0) {
-		throw new Error('Month cannot be in the past');
-	}
-
-	return monthIncrementNum;
-};
-
-const monthIncrementNum = getDate({ chosenMonth: month });
-
-const retryWhenDayFull = async ({ timeout, page }) => { // timout for 5 minutes = 300000
-	await page.waitForSelector('.passholder_reservations__calendar__day');
-	const btnXpath = `//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[1]/div[2]/div[2]/div/div[4]/button[${day}]`;
-	const isDisabled = (await page.$x(`${btnXpath}[@disabled]`)).length !== 0;
-
-	if (isDisabled) {
-		logger.debug(`Day is full. Running again after ${timeout / 1000 / 60} minutes`);
-		await page.waitForTimeout(timeout);
-		await retryWhenDayFull({ timeout, page });
-	}
-
-	logger.debug('Selecting calendar day');
-	const [calendarDayBtn] = (await page.$x(btnXpath));
-	return calendarDayBtn.click();
-};
-
 logger.debug(
-	'Running bot with the following inputs:\n',
+	'Running bot with the following inputs:\n\n',
 	`username: ${username}\n`,
-	'password: ***\n',
+	`password: ${password ? '***' : 'No password.  This is going to break...'}\n`,
 	`resort: ${resort}\n`,
 	`month: ${month}\n`,
 	`day: ${day}\n`
 );
 
-// (async () => {
-// 	try {
-// 		const browser = await puppeteer.launch({
-// 			headless: false,
-// 			slowMo: 75,
-// 			// devtools: true
-// 		});
-// 		const page = await browser.newPage();
-
-// 		// Navigate to reservation page
-// 		await page.goto('https://example.com');
-// 		await page.evaluate(async () => {
-// 			const sentence = 'You powder hound.  You are going to Breckenridge on 1 21.  You will be surfing the glades on champagne powder like a boss.  Rip \'em and stick \'em boys and girls';
-// 			const utterance = new SpeechSynthesisUtterance(sentence);
-// 			window.speechSynthesis.speak(utterance);
-// 		});
-// 	} catch (e) {
-// 		logger.debug(e);
-// 	}
-// })();
-
 (async () => {
-	// Setup
 	try {
 		const browser = await puppeteer.launch({
-			headless: runHeadless, // only false if you don't like watching magic browesers or in Docker
-			slowMo: 75,
-			// devtools: true
+			headless: config.runHeadless, // only false if you don't like watching magic browesers or in Docker
+			slowMo: 75, // Slowed down to more closely resemble human beahvior and/or dramatic effect
+			devtools: config.devtools,
 		});
 		const page = await browser.newPage();
 
-		// Navigate to reservation page
-		await page.goto('https://www.epicpass.com/account/login.aspx?url=%2fplan-your-trip%2flift-access%2freservations.aspx%3freservation%3dtrue');
+		await page.goto(config.initialUrl);
 
-		await page.waitForXPath('//*[@id="onetrust-accept-btn-handler"]');
-		const [cookieBtn] = await page.$x('//*[@id="onetrust-accept-btn-handler"]');
-		await cookieBtn.click();
-		logger.debug('Accepted cookie policy');
-		// // Login
-		// await page.click('#txtUserName_3');
-		// logger.debug('Typing username');
-		// await page.type('#txtUserName_3', username, { delay: 20 });
-
-		// await page.click('#txtPassword_3');
-		// logger.debug('Typing password');
-		// await page.type('#txtPassword_3', password, { delay: 20 });
-
-		// await page.waitForXPath('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
-		// const [loginButton] = await page.$x('/html/body/div[3]/div/div/div[2]/div/div/div[1]/form/div/div/div[5]/button');
-		// logger.debug('Clicking login button');
-		// await loginButton.click();
-		// logger.debug('Logged in');
+		await acceptCookies({ page });
 		await login({ page, username, password, delay: 20 });
-		await page.waitForNavigation();
-
-		const resortSelection = await page.waitForSelector('#PassHolderReservationComponent_Resort_Selection');
-		logger.debug('Selecting a resort');
-		await resortSelection.select('#PassHolderReservationComponent_Resort_Selection', resort);
-
-		logger.debug('Selecting month');
-
-		await page.click('#passHolderReservationsSearchButton');
-		await page.waitForSelector('.passholder_reservations__calendar__day');
-
-		if (monthIncrementNum !== 0) {
-			for (let i = 0; i < monthIncrementNum; i++) {
-				await page.waitForSelector('.passholder_reservations__calendar__arrow--right');
-				await page.click('.passholder_reservations__calendar__arrow--right');
-			}
-		}
-
-		await retryWhenDayFull({ timeout: 300000, page }); // Recursively retries every 5 minutes
-
-		const passholderCheckbox = await page.waitForSelector('.passholder_reservations__assign_passholder_modal__name');
-		logger.debug('Selecting passholder');
-		passholderCheckbox.click();
-
-		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
-		const [assignPassholderBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[2]/div[1]/div[2]/div/div[3]/button[2]');
-		logger.debug('Assigning passholder');
-		await assignPassholderBtn.click();
-
-		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
-		const [termsAdnConditionsBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[2]/div[2]/div[2]/label/span');
-		logger.debug('Consenting to shred');
-		await termsAdnConditionsBtn.click();
-
-		await page.waitForXPath('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
-		const [completeResBtn] = await page.$x('//*[@id="passHolderReservations__wrapper"]/div[3]/div[2]/div[6]/div[3]/button');
-		logger.debug('Completing reservation');
-		completeResBtn.click();
-		logger.debug('GET READY TO SHRED!!!');
-
-		// if (
-		// 	config.twilioAccountSid &&
-		// 	config.twilioAuthToken &&
-		// 	config.twilioSendFromNum &&
-		// 	config.myPhoneNumber
-		// ) {
-		// 	await twilioService(resort, month, day);
-		// }
-
-		// await page.waitForSelector('.confirmed_reservation__logo');
-		// await page.evaluate(async () => {
-		// 	const sentence = 'You powder hound.  You are going to Breckenridge on 1 21.  You will be surfing the glades on champagne powder like a boss.  Rip \'em and stick \'em boys and girls';
-		// 	const utterance = new SpeechSynthesisUtterance(sentence);
-		// 	window.speechSynthesis.speak(utterance);
-		// });
-		await page.waitForTimeout(10000);
+		await selectResort({ page, resort });
+		await selectMonth({ page, month });
+		await selectDayRetryWhenFull({ page, day, timeout: 300000 }); // Recursively retries every 5 minutes
+		await grantUserConsent({ page });
+		await completeReservation({ page });
+		await sendTwilioMsg({ resort, month, day });
+		await finishWithRobotVoice({ page, resort, month, day });
 
 		await browser.close();
+		process.exit(0);
 	} catch (error) {
-		logger.error('¯\\_(ツ)_/¯\n\n\n');
+		logger.error('\n\n\n¯\\_(ツ)_/¯\n\n\n');
 		logger.error(error);
-		process.exit();
+		process.exit(1);
 	}
 })();
