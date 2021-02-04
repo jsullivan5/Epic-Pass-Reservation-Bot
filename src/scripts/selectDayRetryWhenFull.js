@@ -9,6 +9,7 @@ const selectDayRetryWhenFull = async ({ page, day, timeout }) => {
 		logger.debug(`Day is full. Running again after ${timeout / 1000 / 60} minutes`);
 		await page.waitForTimeout(timeout);
 		await page.waitForSelector('#passHolderReservationsSearchButton');
+		logger.debug('Clicking "Check Avaialability" to refresh');
 		await page.click('#passHolderReservationsSearchButton');
 		await selectDayRetryWhenFull({ page, day, timeout });
 	}
