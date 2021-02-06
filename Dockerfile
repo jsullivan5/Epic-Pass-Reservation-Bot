@@ -1,4 +1,5 @@
 # TODO: This doesn't work yet
+# https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-in-docker
 
 FROM node:14.15.4-slim
 
