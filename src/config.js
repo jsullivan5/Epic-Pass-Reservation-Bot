@@ -18,6 +18,7 @@ const config = {
 	month: process.env.MONTH,
 	day: process.env.DAY,
 	runHeadless: process.env.RUN_HEADLESS || false,
+	retryTimeout: 120000, // 2 minutes
 	devtools: process.env.DEVTOOLS || false,
 	roboVoiceEnabled: true, // Why would to toggle this????
 	// Add these vars to the .env file if you want to enable this feature

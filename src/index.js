@@ -59,7 +59,7 @@ logger.debug(
 		await login({ page, username, password, delay: 20 });
 		await selectResort({ page, resort });
 		await selectMonth({ page, month });
-		await selectDayRetryWhenFull({ page, day, timeout: 300000 }); // Recursively retries every 5 minutes
+		await selectDayRetryWhenFull({ page, day, timeout: config.retryTimeout }); // Recursively retries based on config.retryTimeout minutes
 		await grantUserConsent({ page });
 		await completeReservation({ page });
 		await sendTwilioMsg({ resort, month, day });
