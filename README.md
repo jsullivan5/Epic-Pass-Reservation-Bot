@@ -19,7 +19,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-* **Node.js** version >14 - ([install node](https://nodejs.org/en/download/)) or use a your package manager of choice (e.g. Homebrew, Chocolatey, etc).
+* **Node.js** version >14 - [install node](https://nodejs.org/en/download/) or use a your package manager of choice (e.g. Homebrew, Chocolatey, etc).
 
 * **NPM** - Should come with any distribution of Node.js [Get NPM](https://www.npmjs.com/get-npm)
 
