@@ -17,13 +17,13 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-* Node.js version >14 - ([install node](https://nodejs.org/en/download/)) or use a your package manager of choice (e.g. Homebrew, Chocolatey, etc).
+* **Node.js** version >14 - ([install node](https://nodejs.org/en/download/)) or use a your package manager of choice (e.g. Homebrew, Chocolatey, etc).
 
-* NPM - Should come with any distribution of Node.js [Get NPM](https://www.npmjs.com/get-npm)
+* **NPM** - Should come with any distribution of Node.js [Get NPM](https://www.npmjs.com/get-npm)
 
-* Git - If you don't know what this is, just download the project files as a zip... [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* **Git** - If you don't know what this is, just download the project files as a zip... [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-* Mac OS or Linux - Windows not currently supported.  Docker support for Windows coming soon or build it yourself ;)
+* **Mac OS or Linux** - Windows not currently supported.  Docker support for Windows coming soon or build it yourself ;)
 
 ### Installing
 
