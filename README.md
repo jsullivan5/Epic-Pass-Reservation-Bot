@@ -1,11 +1,13 @@
-# Epic-Pass-Reservation-Bot
-
+# Epic Pass Reservation Bot
+```bash
 ___________      .__         __________        __   
 \_   _____/_____ |__| ____   \______   \ _____/  |_ 
  |    __)_\____ \|  |/ ___\   |    |  _//  _ \   __\
  |        \  |_> >  \  \___   |    |   (  <_> )  |  
 /_______  /   __/|__|\___  >  |______  /\____/|__|  
         \/|__|           \/          \/            
+```
+
 
 This app automates Epic Pass reservations for the 2020-2021 season.  No changes to the code are required to get started.  All  user data  is consumed from CLI prompts.  Retry logic attempts to book full days until sucessful.  It can be configured to send text messages with a Twilio account but not needed.  There's a lot of goofy stuff built in this.  Get ready to shred, `Brah`.
 
