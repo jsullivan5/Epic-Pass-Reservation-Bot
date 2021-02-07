@@ -31,7 +31,7 @@ What things you need to install the software and how to install them
 
 Follow these steps to setup this project
 
-Clone the project
+*Clone the project*
 ```bash
 git clone git@github.com:jsullivan5/Epic-Pass-Reservation-Bot.git
 ```
@@ -40,29 +40,28 @@ or
 Download the project as a zip file from this repository
 ```
 
-Ensure you are using Node version 14
-
+*Ensure you are using Node version 14*
 ```bash
 node -v
 # output should be something like v14.15.4
 ```
 
-Navigate to project folder
+*Navigate to project folder*
 ```bash
 cd Epic-Pass-Reservation-Bot
 ```
 
-Install project dependencies
+*Install project dependencies*
 ```bash
 npm install
 ```
 
-Make sure CLI is executable
+*Make sure CLI is executable*
 ```bash
 chmod +x epic_cli.sh
 ```
 
-Run the CLI and get them rezzies
+*Run the CLI and get them rezzies!*
 ```bash
 ./epic_cli.sh
 ```
