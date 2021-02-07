@@ -71,7 +71,7 @@ month_array=(January February March April May June)
 read -p "Enter Epic email: "            username
 echo "Enter Epic password: " && read -s password
 
-PS3="Choose a resort: "
+PS3="Choose a resort (enter number): "
 select resort in "${resort_array[@]}";
 do
   echo "$resort ($REPLY). ${RED}Sick Bruh${NO_COLOR}"
@@ -79,14 +79,14 @@ do
 	break;
 done
 
-PS3="What Month do you want to go: "
+PS3="What Month do you want to go (enter number): "
 select month in "${month_array[@]}";
 do
   echo "$month ($REPLY). ${RED}Rad.${NO_COLOR}"
   chosen_month="$(($REPLY - 1))"
 	break;
 done
-read -p "What day: " chosen_day
+read -p "What day (enter number): " chosen_day
 
 export USERNAME=$username
 export PASSWORD=$password
