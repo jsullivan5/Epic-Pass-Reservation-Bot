@@ -23,7 +23,7 @@ What things you need to install the software and how to install them
 
 * **Git** - If you don't know what this is, just download the project files as a zip... [Install Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-* **Mac OS or Linux** - Windows not currently supported.  Docker support for Windows coming soon or build it yourself ;)
+* **Mac OS or Linux** - *Windows not currently supported.*  Docker support for Windows coming soon or build it yourself ;)
 
 ### Installing
 
