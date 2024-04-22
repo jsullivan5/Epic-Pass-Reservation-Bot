@@ -8,7 +8,8 @@ ___________      .__         __________        __
         \/|__|           \/          \/            
 ```
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vIjNRBX3Nbg?si=IhUZ6MfXpsopVnca" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![See the demo](https://img.youtube.com/vi/vIjNRBX3Nbg/maxresdefault.jpg)](https://www.youtube.com/watch?v=vIjNRBX3Nbg)
+
 
 This app automates Epic Pass reservations for the 2020-2021 season.  No changes to the code are required to get started.  All  user data  is consumed from CLI prompts.  Retry logic attempts to book full days until sucessful.  It can be configured to send text messages with a Twilio account but not needed.  There's a lot of goofy stuff built in this.  Get ready to shred, `Brah`.
 
