@@ -23,7 +23,7 @@ const finishWithRobotVoice = async ({ page, resort, month, day }) => {
 			const sentence = `
 				You are going to ${humanReadableResort} on ${(parseInt(month) + 1)} ${day}.
 				You will be floating the glades on champagne powder like a boss.
-				It's going to be Chronicles of fucking Gnarnia out there.
+				It's going to be Chronicles of Gnarnia out there.
 			`;
 			const utterance = new SpeechSynthesisUtterance(sentence);
 			window.speechSynthesis.speak(utterance);
